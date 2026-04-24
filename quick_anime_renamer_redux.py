@@ -20,13 +20,21 @@ APP_VERSION = "1.1.6"
 VIDEO_EXTENSIONS = {".mkv", ".mp4", ".avi", ".mov", ".wmv"}
 
 
+def get_base_dir():
+    if getattr(sys, "frozen", False):
+        return os.path.dirname(sys.executable)
+    return os.path.dirname(os.path.abspath(__file__))
+
+
+def resource_path(filename):
+    if getattr(sys, "frozen", False):
+        return os.path.join(getattr(sys, "_MEIPASS", get_base_dir()), filename)
+    return os.path.join(get_base_dir(), filename)
+
+
 def get_settings_path():
     """INI file next to script or EXE."""
-    if getattr(sys, "frozen", False):
-        base_dir = os.path.dirname(sys.executable)
-    else:
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(base_dir, "QuickAnimeRenamerRedux.ini")
+    return os.path.join(get_base_dir(), "QuickAnimeRenamerRedux.ini")
 
 
 def settings_bool(value, default=False):
@@ -42,7 +50,7 @@ class AnimeRenamer(QWidget):
         super().__init__()
 
         self.setWindowTitle(f"{APP_NAME} v{APP_VERSION}")
-        self.setWindowIcon(QIcon("quick_anime_renamer_redux.ico"))
+        self.setWindowIcon(QIcon(resource_path("quick_anime_renamer_redux.ico")))
         self.resize(820, 520)
 
         self.settings = QSettings(get_settings_path(), QSettings.IniFormat)
@@ -70,22 +78,26 @@ class AnimeRenamer(QWidget):
         title.setStyleSheet("font-size:16px;font-weight:bold;")
         main.addWidget(title)
 
-        self.cb_brackets = QCheckBox("Remove [ ]")
-        self.cb_parentheses = QCheckBox("Remove ( )")
-        self.cb_curly = QCheckBox("Remove { }")
-        self.cb_underscore = QCheckBox("Replace _ with spaces")
-        self.cb_dots = QCheckBox("Replace . with spaces")
-        self.cb_episode = QCheckBox("Auto-detect episode numbers")
+        self.cb_brackets = QCheckBox()
+        self.cb_parentheses = QCheckBox()
+        self.cb_curly = QCheckBox()
+        self.cb_underscore = QCheckBox()
+        self.cb_dots = QCheckBox()
+        self.cb_episode = QCheckBox()
 
-        for cb in (
-            self.cb_brackets,
-            self.cb_parentheses,
-            self.cb_curly,
-            self.cb_underscore,
-            self.cb_dots,
-            self.cb_episode,
+        for cb, text in (
+            (self.cb_brackets, "Remove [ ]"),
+            (self.cb_parentheses, "Remove ( )"),
+            (self.cb_curly, "Remove { }"),
+            (self.cb_underscore, "Replace _ with spaces"),
+            (self.cb_dots, "Replace . with spaces"),
+            (self.cb_episode, "Auto-detect episode numbers"),
         ):
-            main.addWidget(cb)
+            row = QHBoxLayout()
+            row.addWidget(cb)
+            row.addWidget(QLabel(text))
+            row.addStretch(1)
+            main.addLayout(row)
             cb.stateChanged.connect(self.on_option_changed)
 
         buttons = QHBoxLayout()
@@ -292,6 +304,7 @@ class AnimeRenamer(QWidget):
 # -----------------------
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon(resource_path("quick_anime_renamer_redux.ico")))
     window = AnimeRenamer()
     window.show()
     sys.exit(app.exec())
