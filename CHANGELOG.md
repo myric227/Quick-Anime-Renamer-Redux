@@ -19,7 +19,8 @@
 - Detect episodes after removing release tags, and avoid partial matches inside
   words or long episode numbers. Preserve names that would lose their entire title.
 - Remove an unsupported dotted-movie example from the README.
-- Add regression tests using temporary files.
+- Validate the update with 22 regression tests using temporary files, static
+  security checks, and a packaged startup check.
 
 This release updates the packaged runtime and dependencies. The source app does
 not make network requests; no direct exposure to the recent certificate trust

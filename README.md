@@ -49,8 +49,6 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-build.txt
 .\.venv\Scripts\python.exe -m pip check
 .\.venv\Scripts\python.exe -m pip_audit
-.\.venv\Scripts\python.exe -m bandit quick_anime_renamer_redux.py
-.\.venv\Scripts\python.exe -m unittest -v test_renamer
 .\build.ps1
 ```
 
@@ -58,9 +56,6 @@ To run from source, use `.\.venv\Scripts\python.exe quick_anime_renamer_redux.py
 `requirements-build.txt` records the installed build and audit environment;
 review newer security updates before future releases. Existing EXEs must be
 rebuilt to receive Python and dependency updates.
-
-The regression tests use temporary files inside `.venv` and run without opening
-the app window. They do not access your video library.
 
 The build script uses a minimal PATH so unrelated installed tools cannot supply
 incompatible DLLs to the executable. It restores the original PATH afterward.
