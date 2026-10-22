@@ -24,17 +24,43 @@ A modern Windows revival of **Quick Anime Renamer**.
 | `[SubsPlease] Yuusha no Kuzu - 06 (1080p).mkv` | **Yuusha no Kuzu - 06.mkv**        |
 | `One_Piece_-_1092_[1080p].mkv`                 | **One Piece - 1092.mkv**           |
 | `Spirited Away (2001).mkv`                     | **Spirited Away.mkv**              |
-| `Akira.1988.1080p.mkv`                         | **Akira.mkv**                      |
+| `Show S01E03v2.mkv`                           | **Show - S01 - 03.mkv**            |
+| `[Group S01E99] Show S02E01.mkv`               | **Show - S02 - 01.mkv**            |
+
+These examples use the default options. Dots are preserved by default, and
+standalone years/resolutions are not automatically removed. For example,
+`Akira.1988.1080p.mkv` stays unchanged. If removing an episode token would leave
+no title, the original filename is preserved. Check the preview for ambiguous
+or multi-episode filenames before applying a batch.
 
 ## Credits
+
 Created by **Justin Morland**  
 Inspired by the original *Quick Anime Renamer* by **Joshua Park**  
 Not affiliated with the original project.
 
 ## Build
-Requires Python 3.10+ and PySide6.
+Build on Windows with Python 3.14.9 or a newer patched 3.14 release.
+The project dependencies are isolated in `.venv`; activation is optional.
 
 ```powershell
-pip install pyside6 pyinstaller
-python -m PyInstaller --onefile --windowed --icon=quick_anime_renamer_redux.ico --add-data "quick_anime_renamer_redux.ico;." quick_anime_renamer_redux.py
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade "pip>=26.2.2"
+.\.venv\Scripts\python.exe -m pip install -r requirements-build.txt
+.\.venv\Scripts\python.exe -m pip check
+.\.venv\Scripts\python.exe -m pip_audit
+.\.venv\Scripts\python.exe -m bandit quick_anime_renamer_redux.py
+.\.venv\Scripts\python.exe -m unittest -v test_renamer
+.\build.ps1
 ```
+
+To run from source, use `.\.venv\Scripts\python.exe quick_anime_renamer_redux.py`.
+`requirements-build.txt` records the installed build and audit environment;
+review newer security updates before future releases. Existing EXEs must be
+rebuilt to receive Python and dependency updates.
+
+The regression tests use temporary files inside `.venv` and run without opening
+the app window. They do not access your video library.
+
+The build script uses a minimal PATH so unrelated installed tools cannot supply
+incompatible DLLs to the executable. It restores the original PATH afterward.
